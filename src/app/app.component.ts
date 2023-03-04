@@ -7,4 +7,11 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = '2022-2023-2-korszeru';
+
+  defaultTitle = false;
+  secondaryTitle = 'Secondary'
+
+  changeTitle() {
+    this.defaultTitle = !this.defaultTitle;
+  }
 }

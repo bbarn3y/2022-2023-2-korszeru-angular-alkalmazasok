@@ -1,12 +1,24 @@
-<form>
+<form [formGroup]="loginForm">
   <mat-form-field appearance="fill">
     <mat-label>Enter your email</mat-label>
-    <input matInput placeholder="pat@example.com" [formControl]="email" required>
-    <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+    <input matInput placeholder="pat@example.com"
+           [formControl]="$any(loginForm.controls['mail'])">
+    <mat-error *ngIf="loginForm.controls['mail'].hasError('required')">
+      Please provide an e-mail address!
+    </mat-error>
+    <mat-error *ngIf="loginForm.controls['mail'].hasError('email')">
+      Please provide a valid e-mail address!
+    </mat-error>
   </mat-form-field>
   <mat-form-field appearance="fill">
     <mat-label>Enter your email</mat-label>
-    <input matInput placeholder="pat@example.com" [formControl]="email" required>
-    <mat-error *ngIf="email.invalid">{{getErrorMessage()}}</mat-error>
+    <input matInput placeholder="pat@example.com"
+           formControlName="password">
+    <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
+      Please provide a password!
+    </mat-error>
+    <mat-error *ngIf="loginForm.controls['password'].hasError('pattern')">
+      The password must contain 7 numbers and nothing else.
+    </mat-error>
   </mat-form-field>
 </form>

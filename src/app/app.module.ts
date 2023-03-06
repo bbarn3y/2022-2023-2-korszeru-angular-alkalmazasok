@@ -6,9 +6,12 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { AuthenticatedComponent } from './authenticated/authenticated.component';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from "@angular/material/input";
+import {ReactiveFormsModule} from "@angular/forms";
 
 const materialImports = [
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatInputModule
 ]
 
 @NgModule({
@@ -19,8 +22,9 @@ const materialImports = [
   ],
   imports: [
     ...materialImports,
+    AppRoutingModule,
     BrowserModule,
-    AppRoutingModule
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

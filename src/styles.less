@@ -1,1 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.generateMargin(@counter) when (@counter >= 0) {
+  .generateMargin(@counter - 5);
+  .m-t-@{counter} {
+    margin-top: @counter * 1px !important;
+  }
+  .m-b-@{counter} {
+    margin-bottom: @counter * 1px !important;
+  }
+  .m-l-@{counter} {
+    margin-left: @counter * 1px !important;
+  }
+  .m-r-@{counter} {
+    margin-right: @counter * 1px !important;
+  }
+}
+.generateMargin(150);

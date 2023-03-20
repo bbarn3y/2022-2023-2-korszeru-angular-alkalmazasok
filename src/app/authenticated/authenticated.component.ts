@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {EventService} from "src/app/_services/event.service";
 
 @Component({
   selector: 'app-authenticated',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthenticatedComponent implements OnInit {
 
-  constructor() { }
+  constructor(private eventService: EventService) { }
 
   ngOnInit(): void {
+    this.eventService.pageImageClicked.subscribe((clickEvent) => {
+      console.log('clickEvent', clickEvent);
+    })
   }
 
 }

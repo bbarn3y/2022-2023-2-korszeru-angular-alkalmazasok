@@ -12,19 +12,27 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
 import {HttpClientModule} from "@angular/common/http";
+import { PageComponent } from './book/page/page.component';
+import { BookComponent } from './book/book.component';
+import {MatTableModule} from "@angular/material/table";
+import {MatSelectModule} from "@angular/material/select";
 
 const materialImports = [
   MatButtonModule,
   MatCardModule,
   MatFormFieldModule,
-  MatInputModule
+  MatInputModule,
+  MatSelectModule,
+  MatTableModule
 ]
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthenticatedComponent,
-    LoginComponent
+    LoginComponent,
+    PageComponent,
+    BookComponent
   ],
   imports: [
     ...materialImports,

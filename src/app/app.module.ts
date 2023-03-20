@@ -12,19 +12,29 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
 import {HttpClientModule} from "@angular/common/http";
+import { BookComponent } from './book/book.component';
+import { PageComponent } from './book/page/page.component';
+import {MatSelectModule} from "@angular/material/select";
+import { ExamplePipe } from './_pipes/example.pipe';
+import { ExampleDirective } from './_directive/example.directive';
 
 const materialImports = [
   MatButtonModule,
   MatCardModule,
   MatFormFieldModule,
-  MatInputModule
+  MatInputModule,
+  MatSelectModule
 ]
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthenticatedComponent,
-    LoginComponent
+    BookComponent,
+    LoginComponent,
+    PageComponent,
+    ExamplePipe,
+    ExampleDirective
   ],
   imports: [
     ...materialImports,
@@ -34,7 +44,9 @@ const materialImports = [
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    ExamplePipe
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

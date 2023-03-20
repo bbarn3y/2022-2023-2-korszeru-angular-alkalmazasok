@@ -1,0 +1,33 @@
+<div style="display: flex; flex-direction: row">
+  <img [src]="imageUrl" />
+</div>
+<div style="display: flex; justify-content: center" appExample>
+  {{ index }} ({{ index + moveCounter}})
+</div>
+
+<form [formGroup]="pageForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option [value]="null">-</mat-option>
+      <mat-option [value]="true">{{'Active' | example}}</mat-option>
+      <mat-option [value]="false">Inactive</mat-option>
+    </mat-select>
+    <mat-error *ngIf="pageForm.controls['status'].hasError('isNull')">
+      Status cannot be null!
+    </mat-error>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput placeholder="abc"
+           formControlName="name">
+    <div *ngIf="pageForm.hasError('missingName')">
+      The name must be provided if status is active!
+    </div>
+  </mat-form-field>
+
+  <button mat-button
+          class="m-t-20"
+          [disabled]="!pageForm.valid"
+          (click)="save()">Save</button>
+</form>

@@ -1,0 +1,8 @@
+<div *ngFor="let imageUrl of imageUrls; let i = index" style="display: inline-flex">
+  <app-page [imageUrl]="imageUrl"
+            [index]="i"></app-page>
+</div>
+
+<!-- ??? -->
+
+<button mat-button (click)="stepRight()">-></button>

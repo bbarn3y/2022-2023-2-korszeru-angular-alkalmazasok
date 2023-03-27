@@ -13,6 +13,11 @@ export class UserService {
     this.isLoggedIn = !!this.cookieService.get(this.sessionKey);
   }
 
+  removeSession(): void {
+    this.cookieService.delete(this.sessionKey);
+    this.isLoggedIn = false;
+  }
+
   saveSession(token: string): void {
     // localStorage.setItem(this.sessionKey, token);
     this.cookieService.set(this.sessionKey, token);

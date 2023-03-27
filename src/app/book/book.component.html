@@ -1,15 +1,22 @@
-<ng-container *ngFor="let page of pages; let i = index">
-  <app-page [imageUrl]="page.imageUrl"
-            [index]="i"
-            [title]="page.title"
-            (imageClicked)="drawTable(page.title, $event)"></app-page>
-</ng-container>
+<div style="display: flex">
+  <ng-container *ngFor="let page of pages; let i = index">
+    <app-page [imageUrl]="page.imageUrl"
+              [index]="i"
+              [title]="page.title"
+              (imageClicked)="drawTable(page.title, $event)"></app-page>
+  </ng-container>
+</div>
+
+<div>
+  <button mat-button (click)="toPreviousPage()"> < </button>
+  <button mat-button (click)="toNextPage()"> > </button>
+</div>
 
 <table mat-table [dataSource]="pages" class="mat-elevation-z8">
   <!-- Title Column -->
   <ng-container matColumnDef="title">
     <th mat-header-cell *matHeaderCellDef> Title </th>
-    <td mat-cell *matCellDef="let page" class="p-l-10 p-r-10"> {{page.title}} </td>
+    <td mat-cell *matCellDef="let page" class="p-l-10 p-r-10"> {{page.title | example }} </td>
   </ng-container>
 
   <!-- Counter Column -->

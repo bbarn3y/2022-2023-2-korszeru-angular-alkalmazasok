@@ -1,3 +1,12 @@
 <p>authenticated works!</p>
 
+<button mat-button (click)="logout()">Sign out</button>
+
+<button mat-button (click)="changeLanguage('en')">EN</button>
+<button mat-button (click)="changeLanguage('hu')">HU</button>
+
+<div>
+  {{ currentTime | date: 'YYYY.MM.dd. hh:mm:ss' }}
+</div>
+
 <app-book></app-book>

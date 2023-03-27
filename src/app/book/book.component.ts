@@ -38,4 +38,18 @@ export class BookComponent implements OnInit {
       return page;
     });
   }
+
+  toNextPage() {
+    const lastPage = this.pages.pop();
+    if (lastPage) {
+      this.pages = [lastPage, ...this.pages];
+    }
+  }
+
+  toPreviousPage() {
+    const firstPage = this.pages.shift();
+    if (firstPage) {
+      this.pages.push(firstPage);
+    }
+  }
 }

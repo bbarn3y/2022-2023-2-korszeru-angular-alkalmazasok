@@ -19,5 +19,10 @@ export class UserService {
     this.isLoggedIn = true;
   }
 
+  removeSession(): void {
+    this.cookieService.delete(this.sessionKey);
+    this.isLoggedIn = false;
+  }
+
 
 }

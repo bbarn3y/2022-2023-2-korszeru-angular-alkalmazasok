@@ -1,3 +1,10 @@
 <p>authenticated works!</p>
 
+<button (click)="logout()">Sign out</button>
+
 <app-book></app-book>
+
+<div style="position: absolute; right: 10px; bottom: 10px;">
+  <button mat-button (click)="changeLanguage('en')">EN</button>
+  <button mat-button (click)="changeLanguage('hu')">HU</button>
+</div>

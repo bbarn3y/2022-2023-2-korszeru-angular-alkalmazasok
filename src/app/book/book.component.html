@@ -1,9 +1,18 @@
-<ng-container *ngFor="let page of pages; let i = index">
-  <app-page [imageUrl]="page.imageUrl"
-            [index]="i"
-            [title]="page.title"
-            (imageClicked)="drawTable(page.title, $event)"></app-page>
-</ng-container>
+<div>
+  Current time:
+  {{ currentTime | date: 'YYYY.MM.dd. hh:mm:ss' }}
+</div>
+
+<div style="display: flex">
+  <ng-container *ngFor="let page of pages; let i = index">
+    <app-page [imageUrl]="page.imageUrl"
+              [index]="i"
+              [title]="page.title"
+              (imageClicked)="drawTable(page.title, $event)"
+              (toPrevious)="shiftLeft()"
+              (toNext)="shiftRight()"></app-page>
+  </ng-container>
+</div>
 
 <table mat-table [dataSource]="pages" class="mat-elevation-z8">
   <!-- Title Column -->

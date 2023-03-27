@@ -1,0 +1,10 @@
+{
+  "BOOK": {
+    "PAGE": {
+      "STATUS": {
+        "ACTIVE": "Aktív",
+        "INACTIVE": "Inaktív"
+      }
+    }
+  }
+}

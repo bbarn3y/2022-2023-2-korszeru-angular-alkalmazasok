@@ -1,3 +1,16 @@
+- Flex
+- Carousel finish
+- Change detection
+- interval
+- OnDestroy
+- ngx-translate, translate cdr example -> two ways to solve: refactor into variable, pure pipe
+- Angular DevTools
+- custom pipe
+- custom directive
+
+
+
+
 # 202220232Korszeru
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.5.

@@ -1,6 +1,13 @@
+<ng-template #errorTemplate let-error="cause">
+  <mat-icon aria-hidden="false" aria-label="Error icon" fontIcon="error_outline"></mat-icon>
+  {{ error }}
+  <mat-icon aria-hidden="false" aria-label="Error icon" fontIcon="error_outline"></mat-icon>
+</ng-template>
+
 <div style="display: flex">
   <ng-container *ngFor="let page of pages; let i = index">
-    <app-page [imageUrl]="page.imageUrl"
+    <app-page [failureTemplate]="errorTemplate"
+              [imageUrl]="page.imageUrl"
               [index]="i"
               [title]="page.title"
               (imageClicked)="drawTable(page.title, $event)"></app-page>

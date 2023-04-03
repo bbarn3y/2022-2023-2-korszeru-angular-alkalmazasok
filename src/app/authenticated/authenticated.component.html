@@ -1,11 +1,11 @@
-<p>authenticated works!</p>
+<p appHighlight [color]="'orange'">authenticated works!</p>
 
 <button mat-button (click)="logout()">Sign out</button>
 
 <button mat-button (click)="changeLanguage('en')">EN</button>
 <button mat-button (click)="changeLanguage('hu')">HU</button>
 
-<div>
+<div appHighlight [color]="'yellow'">
   {{ currentTime | date: 'YYYY.MM.dd. hh:mm:ss' }}
 </div>
 

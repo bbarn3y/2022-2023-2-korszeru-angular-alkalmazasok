@@ -5,13 +5,13 @@ import {
   NgZone,
   OnInit,
   Output,
-  QueryList,
+  QueryList, TemplateRef,
   ViewChild,
   ViewChildren
 } from '@angular/core';
 import {EventService} from "src/app/_services/event.service";
 import {FormControl, FormGroup} from "@angular/forms";
-import {ValidatorService} from "src/app/_services/validator.service";
+import {ValidatorService} from "../../_services/validator.service";
 import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
 
 @Component({
@@ -21,6 +21,8 @@ import {MatCard, MatCardContent, MatCardFooter} from "@angular/material/card";
 })
 export class PageComponent implements OnInit {
   @Input() title!: string;
+
+  @Input() failureTemplate!: TemplateRef<any>;
 
   @Input() imageUrl!: string;
 
@@ -45,8 +47,7 @@ export class PageComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   onClick(): void {
     this.clickCount++;

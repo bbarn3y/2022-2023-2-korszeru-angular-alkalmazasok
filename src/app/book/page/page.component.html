@@ -1,3 +1,11 @@
+<!--
+<ng-template #errorTemplate let-error="cause">
+  <mat-icon aria-hidden="false" aria-label="Error icon" fontIcon="error_outline"></mat-icon>
+  {{ error }}
+  <mat-icon aria-hidden="false" aria-label="Error icon" fontIcon="error_outline"></mat-icon>
+</ng-template>
+-->
+
 <mat-card>
   <mat-card-header class="justify-content-center">
     <h1>{{title}}</h1>
@@ -23,7 +31,7 @@
           </mat-option>
         </mat-select>
         <mat-error *ngIf="pageForm.controls['status'].hasError('isNull')">
-          Please select a status!
+          <ng-container *ngTemplateOutlet="failureTemplate; context: { cause: 'Please select a status!'}"></ng-container>
         </mat-error>
       </mat-form-field>
       <mat-form-field appearance="fill">
@@ -33,7 +41,7 @@
       </mat-form-field>
 
       <mat-error *ngIf="pageForm.hasError('nameRequired')">
-        Please provide a name!
+        <ng-container *ngTemplateOutlet="failureTemplate; context: { cause: 'Please provide a name!'}"></ng-container>
       </mat-error>
 
       <button mat-button

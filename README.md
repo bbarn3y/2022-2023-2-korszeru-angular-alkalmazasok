@@ -1,3 +1,12 @@
+- Directives
+- tsconfig improve imports
+- Templating
+- Multi-module projects
+- Size-evaluation -> tree and graph
+https://www.npmjs.com/package/webpack-bundle-analyzer
+- Research, evaluating options
+- adoc
+
 # 202220232Korszeru
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.5.

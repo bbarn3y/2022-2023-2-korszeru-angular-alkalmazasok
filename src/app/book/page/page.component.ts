@@ -5,7 +5,7 @@ import {
   NgZone,
   OnInit,
   Output,
-  QueryList,
+  QueryList, TemplateRef,
   ViewChild,
   ViewChildren
 } from '@angular/core';
@@ -25,6 +25,8 @@ export class PageComponent implements OnInit {
   @Input() imageUrl!: string;
 
   @Input() index!: number;
+
+  @Input() validatorOutput!: TemplateRef<any>;
 
   @Output() imageClicked: EventEmitter<number> = new EventEmitter<number>();
 

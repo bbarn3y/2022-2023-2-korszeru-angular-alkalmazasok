@@ -1,0 +1,115 @@
+= Graphics study
+
+== Activity
+
+.Canvas frameworks
+|===
+|Name|First version|Latest version|Notes
+
+|Konva
+|2015. 01. 28.
+|2022. 08. 29.
+|well documented, lots of tutorials and demos
+
+|CreateJS/EASELJS
+|2016. 09. 08.
+|2018. 11. 21.
+|
+
+|ZIM
+|2019. 03. 13.
+|2022. 05. 30.
+|
+
+|Pixi.js
+|2014. 01. 05.
+|2022. 09. 09.
+|
+
+|D3.js
+|2011. 08. 18.
+|2022. 07 03.
+|rather for charts
+
+|Two.js
+|2013. 09. 26.
+|2022. 06. 09.
+|
+
+|P5.js
+|2014. 03. 26.
+|2022. 07. 21.
+|
+
+|Paper.js
+|2013. 05. 06.
+|2021. 03. 17.
+|
+
+|Fabric.js
+|2011. 08. 16.
+|2022. 08. 25.
+|
+
+|PHASER
+|2014. 09. 09.
+|2022. 06. 07.
+|more of a game framework
+
+|Kinetic
+|2014. 04. 18.
+|2015. 01. 22.
+|
+
+|Concrete JS
+|2018. 11. 21.
+|2019. 04. 23.
+|too lightweight
+
+|Particles.js
+|2015. 05. 09.
+|2015. 05. 09.
+|mostly for creating particles
+
+|Matter.js
+|2014. 06. 12.
+|2021. 12. 15.
+|too focused on games and physics
+
+|===
+
+== Features
+
+
+|===
+|Feature|Konva|CreateJS/EASELJS|ZIM|Pixi.js|D3.js|Two.js|P5.js|Paper.js|Fabric.js|PHASER|Matter.JS|Kinetic|ConcreteJS
+
+|groups|+|+|+|||+||+|+|+||?|
+
+|layers|+||+|+||||+||||+|+
+
+|drag&drop|+|+|+|+|+|+|+|+|+|+|+|+|
+
+|zooming|+|+||+|+|+|+|+|+|||?|
+
+|context-menu|+|||||||||||?|
+
+|arrows|+|||||+|+|+||||?|
+
+|custom shapes|+||+|+|+|+|+|+|+|||?|
+
+|free drawing|+|+|+|||+|+|+|+|||?|
+
+|snapping to other objects|+|||||||||||?|
+
+|Npm weekly downloads|150000|1000|100|80000|1750000|4000|25000|30000|110000|15000|10000|1500|10
+
+|Github stars|8100|7900|334|37400|103000|7800|18000|13300|22600|32800|13700|3900|234
+
+|Commit frequency|5-10 days|1 month, but last version is 4 years old|10 dayss|5-10 days|1 month|10 days|3 days|2-3 months, but last version is 1 year old|5-10 days|3 days|2-3 months|nothing since 2016|nothing since 2020
+
+|License|MIT|MIT|MIT|MIT|ISC|MIT|LGPL-2.1|MIT|MIT|MIT|MIT|MIT|MIT
+
+|Documentation quality (1 to 5)|5|4|3|5|4|5|4|5|5|4|4|1 (missing)|4
+
+|===

@@ -10,13 +10,15 @@ const routes: Routes = [
   {
     path: PageRoutes.login,
     component: LoginComponent,
-    canActivate: [PublicGuard]
+    canActivate: [PublicGuard],
+    loadChildren: () => import('./authentication/authentication.module').then(m => m.AuthenticationModule)
   },
   {
     path: PageRoutes.authenticated,
     component: AuthenticatedComponent,
     canActivate: [SessionGuard],
-    canActivateChild: [SessionGuard]
+    canActivateChild: [SessionGuard],
+    loadChildren: () => import('./inner/inner.module').then(m => m.InnerModule)
   },
   {
     path: '',

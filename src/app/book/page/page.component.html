@@ -1,3 +1,9 @@
+<!--
+<ng-template #errorTemplate let-error="failure">
+  <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="error_outline"></mat-icon>
+  {{error}}
+</ng-template>
+-->
 <mat-card>
   <mat-card-header class="justify-content-center">
     <h1>{{title}}</h1>
@@ -23,7 +29,7 @@
           </mat-option>
         </mat-select>
         <mat-error *ngIf="pageForm.controls['status'].hasError('isNull')">
-          Please select a status!
+          <ng-container *ngTemplateOutlet="validatorOutput; context:{failure: 'Please select a status!'}"></ng-container>
         </mat-error>
       </mat-form-field>
       <mat-form-field appearance="fill">
@@ -33,7 +39,7 @@
       </mat-form-field>
 
       <mat-error *ngIf="pageForm.hasError('nameRequired')">
-        Please provide a name!
+        <ng-container *ngTemplateOutlet="validatorOutput; context:{failure: 'Please provide a name!'}"></ng-container>
       </mat-error>
 
       <button mat-button

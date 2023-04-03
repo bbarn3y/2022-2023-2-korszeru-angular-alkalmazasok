@@ -5,7 +5,7 @@
 <button mat-button (click)="changeLanguage('en')">EN</button>
 <button mat-button (click)="changeLanguage('hu')">HU</button>
 
-<div>
+<div appHoverColor [color]="'aqua'">
   {{ currentTime | date: 'YYYY.MM.dd. hh:mm:ss' }}
 </div>
 

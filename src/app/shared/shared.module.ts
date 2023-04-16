@@ -10,8 +10,9 @@ import {MatTableModule} from "@angular/material/table";
 import {HighlightDirective} from "src/app/_directives/highlight.directive";
 import {ReactiveFormsModule} from "@angular/forms";
 import {TranslateModule} from "@ngx-translate/core";
-import {MatAutocomplete, MatAutocompleteModule} from "@angular/material/autocomplete";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {ScrollingModule} from '@angular/cdk/scrolling';
+import {MatToolbarModule} from "@angular/material/toolbar";
 
 const materialImports = [
   MatAutocompleteModule,
@@ -21,7 +22,8 @@ const materialImports = [
   MatIconModule,
   MatInputModule,
   MatSelectModule,
-  MatTableModule
+  MatTableModule,
+  MatToolbarModule
 ]
 
 @NgModule({

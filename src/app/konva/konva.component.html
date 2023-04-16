@@ -1,0 +1,27 @@
+<mat-toolbar>
+  <button mat-button
+          (click)="selectedShape = Shapes.CAR">
+    Car
+  </button>
+  <button mat-button
+          (click)="selectedShape = Shapes.HOUSE">
+    House
+  </button>
+  <button mat-button
+          (click)="selectedShape = Shapes.PARKING">
+    Parking
+  </button>
+  <button mat-button
+          (click)="selectedShape = Shapes.HOUSE_WITH_PARKING">
+    House with parking
+  </button>
+  <span class="spacer"></span>
+  <button mat-button
+          (click)="saveState()">
+    <mat-icon aria-hidden="false" aria-label="Save icon" fontIcon="save_outline"></mat-icon>
+  </button>
+</mat-toolbar>
+
+<div id="container" style="border: 1px solid black">
+
+</div>

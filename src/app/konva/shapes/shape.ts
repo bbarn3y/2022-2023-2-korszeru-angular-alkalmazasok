@@ -1,0 +1,6 @@
+export enum Shapes {
+  CAR = 'CAR',
+  HOUSE = 'HOUSE',
+  HOUSE_WITH_PARKING = 'HOUSE_WITH_PARKING',
+  PARKING = 'PARKING',
+}

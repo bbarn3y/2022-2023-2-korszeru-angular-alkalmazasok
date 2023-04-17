@@ -1,0 +1,45 @@
+= Canvas study
+
+|===
+|Feature|Konva|d3.js|particles.js
+
+| free draw | x | limited support |
+
+|animation| x | |
+
+| CRUD | | |
+
+| dragging | x | |
+
+| magic wand | | |
+
+| limit | | |
+
+| group | | |
+
+| layers | | |
+
+| context menu | | |
+
+| arrows | | |
+
+| package compatibility | | |
+
+| licence | MIT | |
+
+| NPM statistics | 200k+ weekly downloads | |
+
+| Github stars | | |
+
+| code frequency | frequent | |
+
+| Number of developers | | |
+
+| Documentation quality |  | |
+
+| demo | x | |
+
+| learning curve | | |
+
+|===
+

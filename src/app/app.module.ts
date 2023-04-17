@@ -9,6 +9,7 @@ import {CommonModule, DatePipe} from "@angular/common";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {SharedModule} from "src/app/shared/shared.module";
+import { KonvaComponent } from './konva/konva.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -16,7 +17,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    KonvaComponent
   ],
   imports: [
     AppRoutingModule,

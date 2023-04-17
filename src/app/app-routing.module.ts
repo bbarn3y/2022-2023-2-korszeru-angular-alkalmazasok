@@ -5,6 +5,7 @@ import {AuthenticatedComponent} from "src/app/authenticated/authenticated.compon
 import {PageRoutes} from "src/app/_constants/page.routes";
 import {PublicGuard} from "src/app/_guards/public.guard";
 import {SessionGuard} from "src/app/_guards/session.guard";
+import {KonvaComponent} from "src/app/konva/konva.component";
 
 const routes: Routes = [
   {
@@ -15,7 +16,7 @@ const routes: Routes = [
   },
   {
     path: PageRoutes.authenticated,
-    component: AuthenticatedComponent,
+    component: KonvaComponent,
     canActivate: [SessionGuard],
     canActivateChild: [SessionGuard],
     loadChildren: () => import('./inner/inner.module').then((m) => m.InnerModule)

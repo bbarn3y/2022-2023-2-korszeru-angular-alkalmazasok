@@ -16,7 +16,24 @@
     <mat-icon>local_parking</mat-icon>
   </button>
   <span class="example-spacer"></span>
+  <button mat-button
+          (click)="saveState()">
+    <mat-icon aria-hidden="false" aria-label="Save icon" fontIcon="save_outline"></mat-icon>
+  </button>
 </mat-toolbar>
+
+<button #contextMenuTrigger="matMenuTrigger" [matMenuTriggerFor]="contextMenu"
+        style="opacity: 0"
+        class="position-fixed"
+        [style.left.px]="menuLeftPosition"
+        [style.top.px]="menuTopPosition"></button>
+<mat-menu #contextMenu="matMenu">
+  <button mat-menu-item (click)="snapToClosest()">Snap to closest parking</button>
+  <button mat-menu-item (click)="shapeToTop()">To the top</button>
+  <button mat-menu-item (click)="shapeToBottom()">To the back</button>
+  <button mat-menu-item (click)="deleteShape()">Delete</button>
+</mat-menu>
+
 <div id="container">
 
 </div>

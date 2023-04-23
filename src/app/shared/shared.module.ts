@@ -13,6 +13,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {ScrollingModule} from '@angular/cdk/scrolling';
 import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatMenuModule} from "@angular/material/menu";
 
 const materialImports = [
   MatAutocompleteModule,
@@ -21,6 +22,7 @@ const materialImports = [
   MatFormFieldModule,
   MatIconModule,
   MatInputModule,
+  MatMenuModule,
   MatSelectModule,
   MatTableModule,
   MatToolbarModule

@@ -1,4 +1,6 @@
 import Konva from "konva";
+import {ShapeType} from "src/app/_models/shape-type";
+import {Colors} from "src/app/_constants/colors";
 
 export class ParkingShape {
   stage: Konva.Stage;
@@ -26,10 +28,11 @@ export class ParkingShape {
       y: this.y,
       width: this.width,
       height: this.height,
-      fill: '#00D2FF',
+      fill: Colors.defaultBg,
       stroke: 'black',
       strokeWidth: 4,
       draggable: this.draggable,
+      type: ShapeType.PARKING
     });
   }
 }

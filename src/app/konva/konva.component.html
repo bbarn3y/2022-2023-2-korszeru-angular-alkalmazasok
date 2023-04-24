@@ -1,3 +1,18 @@
+<button mat-button
+        class="position-fixed"
+        #contextMenuTrigger="matMenuTrigger"
+        [matMenuTriggerFor]="menu"
+        [style.left.px]="menuPositionLeft"
+        [style.top.px]="menuPositionTop"></button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item
+          (click)="snapToTheClosest()"
+          *ngIf="clickedShape && clickedShape.attrs.type === ShapeType.CAR">Snap the closest</button>
+  <button mat-menu-item (click)="shapeToTop()">To top</button>
+  <button mat-menu-item (click)="shapeToBottom()">To bottom</button>
+  <button mat-menu-item (click)="deleteShape()">Delete</button>
+</mat-menu>
+
 <mat-toolbar color="primary">
   <button mat-icon-button aria-label="Example icon-button with menu icon"
           (click)="selectedShape = ShapeType.CAR">
@@ -16,6 +31,9 @@
     <mat-icon>local_parking</mat-icon>
   </button>
   <span class="example-spacer"></span>
+  <button mat-button (click)="saveData()">
+    <mat-icon>save_outline</mat-icon>
+  </button>
 </mat-toolbar>
 <div id="container">
 

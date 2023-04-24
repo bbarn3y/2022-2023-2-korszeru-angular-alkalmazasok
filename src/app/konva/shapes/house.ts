@@ -1,4 +1,6 @@
 import Konva from "konva";
+import {ShapeType} from "src/app/_models/shape-type";
+import {Colors} from "src/app/_constants/colors";
 
 export class HouseShape {
   stage: Konva.Stage;
@@ -35,13 +37,14 @@ export class HouseShape {
         this.y + this.height
       ],
       closed: true,
-      fill: '#00D2FF',
+      fill: Colors.defaultBg,
       stroke: 'black',
       strokeWidth: 5,
       draggable: this.draggable,
       strokeScaleEnabled: true,
       perfectDrawEnabled: false,
       shadowForStrokeEnabled: false,
+      type: ShapeType.HOUSE
     });
   }
 }

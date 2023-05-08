@@ -7,7 +7,7 @@
 <mat-menu #menu="matMenu">
   <button mat-menu-item
           (click)="snapToTheClosest()"
-          *ngIf="clickedShape && clickedShape.attrs.type === ShapeType.CAR">Snap the closest</button>
+          *ngIf="clickedShape && clickedShape.attrs.type === ShapeType.CAR">Snap to closest</button>
   <button mat-menu-item (click)="shapeToTop()">To top</button>
   <button mat-menu-item (click)="shapeToBottom()">To bottom</button>
   <button mat-menu-item (click)="deleteShape()">Delete</button>
@@ -31,6 +31,13 @@
     <mat-icon>local_parking</mat-icon>
   </button>
   <span class="example-spacer"></span>
+  <button mat-button (click)="zoomToFit()">
+    <mat-icon>zoom_in</mat-icon>
+  </button>
+  <input #generateCountEl matInput type="number" placeholder="Data to generate"/>
+  <button mat-button (click)="generate(+generateCountEl.value)">
+    <mat-icon>dataset</mat-icon>
+  </button>
   <button mat-button (click)="saveData()">
     <mat-icon>save_outline</mat-icon>
   </button>

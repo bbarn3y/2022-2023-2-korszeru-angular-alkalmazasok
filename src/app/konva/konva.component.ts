@@ -11,6 +11,7 @@ import Shape = Konva.Shape;
 import {Colors} from "src/app/_constants/colors";
 import Group = Konva.Group;
 import {MatMenuTrigger} from "@angular/material/menu";
+import {CalculationService} from "src/app/_services/calculation.service";
 
 @Component({
   selector: 'app-konva',
@@ -29,7 +30,8 @@ export class KonvaComponent implements OnInit {
 
   ShapeType = ShapeType;
 
-  constructor(public userService: UserService) { }
+  constructor(private calculationService: CalculationService,
+              public userService: UserService) { }
 
   ngOnInit(): void {
     this.initState();
@@ -51,7 +53,12 @@ export class KonvaComponent implements OnInit {
           this.menuPositionTop = event.target.getClientRect().y;
           this.contextMenuTriggerEl?.openMenu();
         } else {
-          this.drawShape(this.selectedShape, event.evt.offsetX, event.evt.offsetY);
+          if (this.stage) {
+            const pointerPosition = this.stage.getRelativePointerPosition();
+            if (pointerPosition) {
+              this.drawShape(this.selectedShape, pointerPosition.x, pointerPosition.y);
+            }
+          }
         }
       });
 
@@ -61,15 +68,19 @@ export class KonvaComponent implements OnInit {
           .filter((shape) => shape.attrs.type === ShapeType.PARKING)
           .forEach((shape) => {
             const target = event.target as Shape;
-            const targetRect = event.target.getClientRect();
-            if (Konva.Util.haveIntersection(shape.getClientRect(), targetRect)) {
+            const cars = (outerThis.selectedLayer?.children ?? [])
+              .filter((shape) => shape.attrs.type === ShapeType.CAR);
+            const collidesWithP = cars
+              .some((car) => Konva.Util.haveIntersection(shape.getClientRect(), car.getClientRect()));
+            if (collidesWithP) {
               if (shape instanceof Shape) {
                 shape.fill(Colors.highlightBg);
-                outerThis.intersectingObjects = { dragged: target, newHighlight: shape};
               }
             } else {
-              // @todo Buggy
               (shape as Shape).fill(Colors.defaultBg);
+            }
+            if (Konva.Util.haveIntersection(target.getClientRect(), shape.getClientRect())) {
+              outerThis.intersectingObjects = { dragged: target, newHighlight: shape};
             }
           })
       });
@@ -83,6 +94,35 @@ export class KonvaComponent implements OnInit {
               (outerThis.intersectingObjects.newHighlight.getClientRect().y - outerThis.intersectingObjects.dragged.getClientRect().y),
           });
           outerThis.intersectingObjects = undefined;
+        }
+      });
+
+      this.stage.on('wheel', (event) => {
+        event.evt.preventDefault();
+
+        if (this.stage) {
+          let pendingScaleBy = 1.01;
+          let oldScale = this.stage.scaleX();
+          let pointer = this.stage.getPointerPosition();
+          if (pointer) {
+            let mousePointTo = {
+              x: (pointer.x - this.stage.x()) / oldScale,
+              y: (pointer.y - this.stage.y()) / oldScale,
+            }
+
+            let direction = event.evt.deltaY > 0 ? -1 : 1;
+
+            let newScale = direction > 0 ? oldScale * pendingScaleBy : oldScale / pendingScaleBy;
+
+            this.stage.position({
+              x: pointer.x - mousePointTo.x * newScale,
+              y: pointer.y - mousePointTo.y * newScale
+            })
+            this.stage.scale({
+              x: newScale,
+              y: newScale
+            })
+          }
         }
       });
     }
@@ -113,6 +153,15 @@ export class KonvaComponent implements OnInit {
       if (shape) {
         shape.draw(this.selectedLayer);
       }
+    }
+  }
+
+  getCoordinates(child: Shape | Group): { minX: number, minY: number, maxX: number, maxY: number } {
+    return {
+      minX: child.getClientRect().x,
+      minY: child.getClientRect().y,
+      maxX: child.getClientRect().width + child.attrs.width,
+      maxY: child.getClientRect().height + child.attrs.height,
     }
   }
 
@@ -169,11 +218,85 @@ export class KonvaComponent implements OnInit {
   }
 
   snapToTheClosest() {
-    // this.selectedLayer?.children
-    //   ?.filter((child) => child.attrs.type === ShapeType)
-    //   .sort((shape1, shape2) => {
-    //
-    //   })
+    if (this.clickedShape) {
+      const sortedParkingSpots = this.selectedLayer
+        ?.children
+        ?.filter((shape) => shape.attrs.type === ShapeType.PARKING)
+        .sort((shape1, shape2) => {
+          const distance1: number = this.calculationService.calculateDistance(
+            this.clickedShape?.getClientRect().x ?? 0,
+            this.clickedShape?.getClientRect().y ?? 0,
+            shape1.getClientRect().x,
+            shape1.getClientRect().y
+          );
+          const distance2: number = this.calculationService.calculateDistance(
+            this.clickedShape?.getClientRect().x ?? 0,
+            this.clickedShape?.getClientRect().y ?? 0,
+            shape2.getClientRect().x,
+            shape2.getClientRect().y
+          );
+          return distance1 - distance2;
+        });
+
+      if (this.stage && sortedParkingSpots && sortedParkingSpots.length > 0) {
+        let currentScale = this.stage.scale();
+        if (!currentScale) {
+          currentScale = { x: 1, y: 1};
+        }
+        console.log('currentScale', currentScale);
+        this.clickedShape.to({
+          x: this.clickedShape.x() + (sortedParkingSpots[0].getClientRect().x - this.clickedShape.getClientRect().x) / currentScale.x,
+          y: this.clickedShape.y() + (sortedParkingSpots[0].getClientRect().y - this.clickedShape.getClientRect().y) / currentScale.y
+        });
+        // console.log('this.clickedShape', this.clickedShape, sortedParkingSpots[0].getClientRect().x, sortedParkingSpots[0].getClientRect().y);
+        if (sortedParkingSpots[0] instanceof Shape) {
+          sortedParkingSpots[0].fill(Colors.highlightBg);
+        }
+      }
+    }
   }
 
+  zoomToFit() {
+    let minX: number = Number.MAX_SAFE_INTEGER;
+    let minY: number = Number.MAX_SAFE_INTEGER;
+    let maxX: number = Number.MIN_SAFE_INTEGER;
+    let maxY: number = Number.MIN_SAFE_INTEGER;
+    this.selectedLayer
+      ?.children
+      ?.forEach((child) => {
+        if (minX > this.getCoordinates(child).minX) {
+          minX = this.getCoordinates(child).minX;
+        }
+        if (minY > this.getCoordinates(child).minY) {
+          minY = this.getCoordinates(child).minY;
+        }
+        if (maxX < this.getCoordinates(child).maxX) {
+          maxX = this.getCoordinates(child).maxX;
+        }
+        if (maxY < this.getCoordinates(child).maxY) {
+          maxY = this.getCoordinates(child).maxY;
+        }
+      });
+
+    if (this.stage) {
+      const zoomed = this.stage.scaleX() !== 1;
+      if (zoomed) {
+        this.stage.to({
+          x: 0,
+          y: 0,
+          scaleX: 1,
+          scaleY: 1
+        })
+        return;
+      }
+
+
+      // zoom to fit
+
+      this.stage.to({
+        x: minX,
+        y: minY
+      })
+    }
+  }
 }

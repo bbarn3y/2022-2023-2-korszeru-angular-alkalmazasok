@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import Konva from "konva";
 import {ShapeType} from "src/app/_models/shape-type";
 import {UserService} from "src/app/_services/user.service";
@@ -12,13 +12,14 @@ import {Colors} from "src/app/_constants/colors";
 import Group = Konva.Group;
 import {MatMenuTrigger} from "@angular/material/menu";
 import {CalculationService} from "src/app/_services/calculation.service";
+import {GenerateWorkerEvent, WorkerEventType} from "src/app/_models/worker-events-types";
 
 @Component({
   selector: 'app-konva',
   templateUrl: './konva.component.html',
   styleUrls: ['./konva.component.less']
 })
-export class KonvaComponent implements OnInit {
+export class KonvaComponent implements OnInit, AfterViewInit {
   @ViewChild('contextMenuTrigger') contextMenuTriggerEl?: MatMenuTrigger;
   clickedShape?: Shape | Group;
   intersectingObjects?: { dragged: Shape | Group, newHighlight: Shape | Group};
@@ -27,6 +28,7 @@ export class KonvaComponent implements OnInit {
   selectedLayer?: Konva.Layer;
   selectedShape: ShapeType = ShapeType.CAR;
   stage?: Konva.Stage;
+  worker?: Worker;
 
   ShapeType = ShapeType;
 
@@ -37,6 +39,21 @@ export class KonvaComponent implements OnInit {
     this.initState();
 
     this.addEventListeners();
+  }
+
+  ngAfterViewInit() {
+    this.worker = new Worker(new URL('src/app/_workers/konva.worker.ts', import.meta.url));
+    this.worker.onmessage = ( ({ data }) => {
+      if (data.type === WorkerEventType.ADD_LAYER) {
+        this.addNewLayersFromJson(data.layers);
+      } else if (data.type === WorkerEventType.SHAPES_CHANGED) {
+
+      }
+    });
+    this.worker.onerror = (error) => {
+      console.log('Worker error', error);
+    }
+    // this.worker.postMessage( { message: 'Message to worker'} )
   }
 
   addEventListeners() {
@@ -128,6 +145,17 @@ export class KonvaComponent implements OnInit {
     }
   }
 
+  addNewLayersFromJson(layerJsons: string[]) {
+    layerJsons.forEach((layerJson) => {
+      const actLayer = Konva.Node.create(JSON.parse(layerJson));
+      if (actLayer instanceof Konva.Layer) {
+        this.stage?.children?.push(actLayer);
+        this.stage?.add(actLayer);
+      }
+    });
+    console.log(this.stage);
+  }
+
   deleteShape() {
     this.clickedShape?.destroy();
   }
@@ -135,7 +163,7 @@ export class KonvaComponent implements OnInit {
   drawShape(shapeType: ShapeType, x: number, y: number) {
     if (this.stage && this.selectedLayer) {
       let shape;
-      switch(this.selectedShape) {
+      switch(shapeType) {
         case ShapeType.CAR:
           shape = new CarShape(this.stage, x, y, 50, 25);
           break;
@@ -156,12 +184,28 @@ export class KonvaComponent implements OnInit {
     }
   }
 
+  generate(amount: number) {
+    // if (this.stage) {
+    //   for (let i = 0; i < amount; i++) {
+    //     const enumValues = (Object.values(ShapeType) as any) as ShapeType[keyof ShapeType][];
+    //     const randomIndex = Math.floor(Math.random() * enumValues.length);
+    //     const randomShapeType = enumValues[randomIndex] as ShapeType;
+    //     const randomXPosition = Math.floor(Math.random() * this.stage?.width());
+    //     const randomYPosition = Math.floor(Math.random() * this.stage?.height());
+    //     this.drawShape(randomShapeType, randomXPosition, randomYPosition);
+    //   }
+    // }
+
+    this.worker?.postMessage(new GenerateWorkerEvent(amount));
+
+  }
+
   getCoordinates(child: Shape | Group): { minX: number, minY: number, maxX: number, maxY: number } {
     return {
       minX: child.getClientRect().x,
       minY: child.getClientRect().y,
-      maxX: child.getClientRect().width + child.attrs.width,
-      maxY: child.getClientRect().height + child.attrs.height,
+      maxX: child.getClientRect().x + child.getClientRect().width,
+      maxY: child.getClientRect().y + child.getClientRect().height
     }
   }
 
@@ -290,13 +334,24 @@ export class KonvaComponent implements OnInit {
         return;
       }
 
+      let actScale = this.stage.scale();
+      if (!actScale || actScale.x === 0 || actScale.y === 0) {
+        actScale = {x: 1, y: 1};
+      }
+      let scale = Math.min(
+        actScale.x * (this.stage.width() / actScale.x / (maxX - minX)),
+        actScale.y * (this.stage.height() / actScale.y / (maxY - minY))
+      );
+
 
       // zoom to fit
 
       this.stage.to({
-        x: minX,
-        y: minY
-      })
+        x: - minX * scale,
+        y: - minY * scale,
+        scaleX: scale,
+        scaleY: scale,
+      });
     }
   }
 }

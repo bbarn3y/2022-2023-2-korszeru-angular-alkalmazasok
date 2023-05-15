@@ -34,6 +34,10 @@
   <button mat-button (click)="zoomToFit()">
     <mat-icon>zoom_in</mat-icon>
   </button>
+  <input #generateCountEl matInput type="number" placeholder="Data to generate"/>
+  <button mat-button (click)="generate(+generateCountEl.value)">
+    <mat-icon>dataset</mat-icon>
+  </button>
   <button mat-button (click)="saveData()">
     <mat-icon>save_outline</mat-icon>
   </button>

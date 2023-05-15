@@ -1,4 +1,15 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+/**
+ * zoomToFit: getCoordinates -> typo, x, y instead of width
+ * generate
+ * Create the worker: konva.worker.ts
+ * Set up the worker: angular.json and tsconfig.worker.json
+ https://www.typescriptlang.org/tsconfig#lib
+ * AbortSignal issue: npm i -D @types/node
+ * Listen to messages and send a simple message
+ https://konvajs.org/docs/sandbox/Web_Worker.html
+ */
+
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import Konva from "konva";
 import {ShapeType} from "src/app/_models/shape-type";
 import {UserService} from "src/app/_services/user.service";
@@ -12,14 +23,22 @@ import {Colors} from "src/app/_constants/colors";
 import Group = Konva.Group;
 import {MatMenuTrigger} from "@angular/material/menu";
 import {CalculationService} from "src/app/_services/calculation.service";
+import {
+  GenerateEvent,
+  LayerAddedEvent,
+  ShapeListChangedWorkerEvent,
+  WorkerEventType
+} from "src/app/_models/worker-types";
+import {MatInput} from "@angular/material/input";
 
 @Component({
   selector: 'app-konva',
   templateUrl: './konva.component.html',
   styleUrls: ['./konva.component.less']
 })
-export class KonvaComponent implements OnInit {
+export class KonvaComponent implements OnInit, AfterViewInit {
   @ViewChild('contextMenuTrigger') contextMenuTriggerEl?: MatMenuTrigger;
+  @ViewChild('generateCountEl') generateCountEl?: ElementRef<MatInput>;
   clickedShape?: Shape | Group;
   intersectingObjects?: { dragged: Shape | Group, newHighlight: Shape | Group};
   menuPositionLeft?: number;
@@ -27,6 +46,7 @@ export class KonvaComponent implements OnInit {
   selectedLayer?: Konva.Layer;
   selectedShape: ShapeType = ShapeType.CAR;
   stage?: Konva.Stage;
+  worker?: Worker;
 
   ShapeType = ShapeType;
 
@@ -37,6 +57,35 @@ export class KonvaComponent implements OnInit {
     this.initState();
 
     this.addEventListeners();
+  }
+
+  ngAfterViewInit(): void {
+    this.worker = new Worker(new URL('src/app/_workers/konva.worker', import.meta.url));
+    this.worker.onmessage = ({ data }) => {
+      console.log('worker onmessage', data);
+      if (data.type === WorkerEventType.LAYER_ADDED) {
+        (data as LayerAddedEvent).layers?.forEach(layerJson =>
+          this.addNewLayerFromJson(layerJson)
+        );
+      } else
+      if (data.type === WorkerEventType.SHAPES_CHANGED) {
+        (data as ShapeListChangedWorkerEvent).addShapes?.forEach(shapeList => {
+          const actLayer = this.stage?.children?.find(layer => layer.id() === shapeList.layer_id);
+          if (actLayer) {
+            shapeList.shapes.forEach(shapeJson => this.addNewShapeFromJson(shapeJson, actLayer));
+          }
+        });
+        (data as ShapeListChangedWorkerEvent).changeShapes?.forEach(shapeList => {
+          const actLayer = this.stage?.children?.find(layer => layer.id() === shapeList.layer_id);
+          if (actLayer) {
+            shapeList.shapes.forEach(shapeJson => this.updateShapeFromJson(shapeJson, actLayer));
+          }
+        });
+      }
+    };
+    this.worker.onerror = error => {
+      console.log(`Worker error:`, error);
+    };
   }
 
   addEventListeners() {
@@ -128,6 +177,42 @@ export class KonvaComponent implements OnInit {
     }
   }
 
+  addNewLayerFromJson(layerJson: string) {
+    if (this.stage && this.stage.children) {
+      const actLayer = Konva.Node.create(JSON.parse(layerJson));
+      if (actLayer instanceof Konva.Layer) {
+        this.stage.children.push(actLayer);
+        this.stage.add(actLayer);
+      }
+    }
+  }
+
+  addNewShapeFromJson(shapeJson: string, layer: Konva.Layer) {
+    if (this.stage) {
+      const actShape = Konva.Node.create(JSON.parse(shapeJson));
+      if (actShape instanceof Konva.Shape || actShape instanceof Konva.Group) {
+        const actLayer =  this.stage.children?.find(l => l._id === layer._id);
+        if (actLayer) {
+          actLayer?.add(actShape);
+        }
+      }
+    }
+  }
+  updateShapeFromJson(shapeJson: string, layer: Konva.Layer) {
+    if (this.stage) {
+      const actShape = JSON.parse(shapeJson);
+      if (actShape) {
+        let existingShape = layer.children?.find(child => child.attrs.elementID === actShape.attrs.elementID);
+        if (existingShape && existingShape instanceof Konva.Shape) {
+          const keys = Array.from(Object.keys(actShape.attrs))
+          keys.forEach(key => {
+            existingShape?.setAttr(key, actShape.attrs[key]);
+          });
+        }
+      }
+    }
+  }
+
   deleteShape() {
     this.clickedShape?.destroy();
   }
@@ -135,7 +220,7 @@ export class KonvaComponent implements OnInit {
   drawShape(shapeType: ShapeType, x: number, y: number) {
     if (this.stage && this.selectedLayer) {
       let shape;
-      switch(this.selectedShape) {
+      switch(shapeType) {
         case ShapeType.CAR:
           shape = new CarShape(this.stage, x, y, 50, 25);
           break;
@@ -156,13 +241,38 @@ export class KonvaComponent implements OnInit {
     }
   }
 
+  generate(count: number): void {
+    if (this.stage && this.generateCountEl) {
+      // for (let i = 0; i <= Math.abs(count); i++) {
+      //   // Random enum value
+      //   const enumValues = (Object.values(ShapeType) as unknown) as ShapeType[keyof ShapeType][];
+      //   const randomIndex = Math.floor(Math.random() * enumValues.length);
+      //   const randomShapeType = enumValues[randomIndex] as ShapeType;
+      //   const randomXPosition = Math.floor(Math.random() * this.stage?.width());
+      //   const randomYPosition = Math.floor(Math.random() * this.stage?.height());
+      //   this.drawShape(randomShapeType, randomXPosition, randomYPosition);
+      // }
+
+      console.log('generate', this.generateCountEl, this.generateCountEl.nativeElement.value, this.worker);
+      this.worker?.postMessage(new GenerateEvent(+this.generateCountEl.nativeElement.value ?? 100));
+    }
+  }
+
   getCoordinates(child: Shape | Group): { minX: number, minY: number, maxX: number, maxY: number } {
     return {
       minX: child.getClientRect().x,
       minY: child.getClientRect().y,
-      maxX: child.getClientRect().width + child.attrs.width,
-      maxY: child.getClientRect().height + child.attrs.height,
+      maxX: child.getClientRect().x + child.attrs.width,
+      maxY: child.getClientRect().y + child.attrs.height,
     }
+
+    // const shapeRect = child.getClientRect();
+    // return  {
+    //   minX: shapeRect.x,
+    //   maxX: shapeRect.x + shapeRect.width,
+    //   minY: shapeRect.y,
+    //   maxY: shapeRect.y + shapeRect.height
+    // };
   }
 
   initState() {
@@ -257,28 +367,36 @@ export class KonvaComponent implements OnInit {
   }
 
   zoomToFit() {
-    let minX: number = Number.MAX_SAFE_INTEGER;
-    let minY: number = Number.MAX_SAFE_INTEGER;
-    let maxX: number = Number.MIN_SAFE_INTEGER;
-    let maxY: number = Number.MIN_SAFE_INTEGER;
-    this.selectedLayer
-      ?.children
-      ?.forEach((child) => {
-        if (minX > this.getCoordinates(child).minX) {
-          minX = this.getCoordinates(child).minX;
-        }
-        if (minY > this.getCoordinates(child).minY) {
-          minY = this.getCoordinates(child).minY;
-        }
-        if (maxX < this.getCoordinates(child).maxX) {
-          maxX = this.getCoordinates(child).maxX;
-        }
-        if (maxY < this.getCoordinates(child).maxY) {
-          maxY = this.getCoordinates(child).maxY;
-        }
-      });
+    let minX: number | undefined;
+    let maxX: number | undefined;
+    let minY: number | undefined;
+    let maxY: number | undefined;
+    if (this.selectedLayer) {
+      if (this.selectedLayer.visible()) {
+        this.selectedLayer.children?.forEach(child => {
+          if (
+            (child instanceof Konva.Shape || child instanceof Konva.Group)
+          ) {
+            const actCoordinates = this.getCoordinates(child);
+            if (!minX || actCoordinates.minX < minX) {
+              minX = actCoordinates.minX;
+            }
+            if (!minY || actCoordinates.minY < minY) {
+              minY = actCoordinates.minY;
+            }
+            if (!maxX || actCoordinates.maxX > maxX) {
+              maxX = actCoordinates.maxX;
+            }
+            if (!maxY || actCoordinates.maxY > maxY) {
+              maxY = actCoordinates.maxY;
+            }
+          }
+        });
+      }
+    }
 
     if (this.stage) {
+      // Zoom out if we're already zoomed
       const zoomed = this.stage.scaleX() !== 1;
       if (zoomed) {
         this.stage.to({
@@ -286,17 +404,33 @@ export class KonvaComponent implements OnInit {
           y: 0,
           scaleX: 1,
           scaleY: 1
-        })
+        });
         return;
       }
 
+      if (minX === undefined && minY === undefined && maxX === undefined && maxY === undefined) {
+        minX = 0;
+        minY = 0;
+        maxX = 1;
+        maxY = 1;
+      }
+      if (minX !== undefined && minY !== undefined && maxX !== undefined && maxY !== undefined) {
+        let actScale = this.stage.scale();
+        if (!actScale || actScale.x === 0 || actScale.y === 0) {
+          actScale = {x: 1, y: 1};
+        }
+        let scale = Math.min(
+          actScale.x * (this.stage.width() / actScale.x / (maxX - minX)),
+          actScale.y * (this.stage.height() / actScale.y / (maxY - minY))
+        );
 
-      // zoom to fit
-
-      this.stage.to({
-        x: minX,
-        y: minY
-      })
+        this.stage.to({
+          x: - minX * scale,
+          y: - minY * scale,
+          scaleX: scale,
+          scaleY: scale,
+        });
+      }
     }
   }
 }

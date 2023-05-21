@@ -34,6 +34,15 @@ export class ShapesChangedWorkerEvent extends WorkerEvent {
   addShapes?: ShapeChangeByLayerID[];
   changedShapes?: ShapeChangeByLayerID[];
   removedShapes?: ShapeChangeByLayerID[];
+
+  constructor(addShapes: ShapeChangeByLayerID[] = [],
+              changedShapes: ShapeChangeByLayerID[] = [],
+              removedShapes: ShapeChangeByLayerID[] = []) {
+    super(WorkerEventType.SHAPES_CHANGED);
+    this.addShapes = addShapes;
+    this.changedShapes = changedShapes;
+    this.removedShapes = removedShapes;
+  }
 }
 
 export class ShapeChangeByLayerID {

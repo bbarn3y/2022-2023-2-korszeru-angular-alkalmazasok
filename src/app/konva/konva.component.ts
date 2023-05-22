@@ -12,7 +12,7 @@ import {Colors} from "src/app/_constants/colors";
 import Group = Konva.Group;
 import {MatMenuTrigger} from "@angular/material/menu";
 import {CalculationService} from "src/app/_services/calculation.service";
-import {GenerateWorkerEvent, WorkerEventType} from "src/app/_models/worker-events-types";
+import {GenerateWorkerEvent, ShapesChangedWorkerEvent, WorkerEventType} from "src/app/_models/worker-events-types";
 
 @Component({
   selector: 'app-konva',
@@ -47,7 +47,18 @@ export class KonvaComponent implements OnInit, AfterViewInit {
       if (data.type === WorkerEventType.ADD_LAYER) {
         this.addNewLayersFromJson(data.layers);
       } else if (data.type === WorkerEventType.SHAPES_CHANGED) {
-
+        (data as ShapesChangedWorkerEvent).addShapes?.forEach((shapeList) => {
+          const actLayer = this.stage?.children?.find(layer => layer.id() === shapeList.layerId);
+          if (actLayer) {
+            shapeList.shapes.forEach((shape) => this.addNewShapeFromJSON(shape, actLayer));
+          }
+        });
+        (data as ShapesChangedWorkerEvent).changedShapes?.forEach((shapeList) => {
+          const actLayer = this.stage?.children?.find(layer => layer.id() === shapeList.layerId);
+          if (actLayer) {
+            shapeList.shapes.forEach((shapeJSON) => this.updateShapeFromJSON(shapeJSON, actLayer));
+          }
+        });
       }
     });
     this.worker.onerror = (error) => {
@@ -154,6 +165,33 @@ export class KonvaComponent implements OnInit, AfterViewInit {
       }
     });
     console.log(this.stage);
+  }
+
+  addNewShapeFromJSON(shapeJSON: string, layer: Konva.Layer): void {
+    if (this.stage) {
+      const actShape = Konva.Node.create(JSON.parse(shapeJSON));
+      if (actShape instanceof Konva.Shape || actShape instanceof Konva.Group) {
+        const actLayer = this.stage.children?.find(l => l._id == layer._id);
+        if (actLayer) {
+          actLayer.add(actShape);
+        }
+      }
+    }
+  }
+
+  updateShapeFromJSON(shapeJSON: string, layer: Konva.Layer): void {
+    if (this.stage) {
+      const actShape = JSON.parse(shapeJSON);
+      if (actShape) {
+        let existingShape = layer.children?.find((child) => child.attrs.elementID === actShape.attrs.elementID);
+        if (existingShape) {
+          const keys = [...Object.keys(actShape.attrs)];
+          keys.forEach(key => {
+            existingShape?.setAttr(key, actShape.attrs[key]);
+          })
+        }
+      }
+    }
   }
 
   deleteShape() {
